@@ -7,7 +7,7 @@ namespace CustomRoutes
         public List<CustomRoute> Routes { get; set; } = new List<CustomRoute>
         {
             new CustomRoute { Id = 900, Name = "MyCustomRoute", Region = "CustomRegion" },
-            new CustomRoute { Id = 901, Name = "CustomRoute2", Region = "CustomRegion" }
+            new CustomRoute { Id = 901, Name = "CustomSouthernCARoute", Region = "SouthernCA" }
         };
 
         public List<string> CustomRegions { get; set; } = new List<string>
