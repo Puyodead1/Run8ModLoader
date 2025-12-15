@@ -1,0 +1,16 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Mods/">
+    <Project Path="Mods/CustomRoutesMod/CustomRoutesMod.csproj" Id="513c4786-4b28-426c-bccc-1cb87e9bab41" />
+  </Folder>
+  <Project Path="Run8ModAPI/Run8ModAPI.csproj" Id="5db8f8bc-21fa-4a4e-b35e-4e1e8b2ff014" />
+  <Project Path="Run8ModLoader/Run8ModLoader.csproj" Id="ea0ad3d2-8102-45dc-9355-cd00618959f5">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="Run8Patcher/Run8Patcher.csproj" Id="f6cffeb7-b4f3-47fd-a072-ef8f653b39e3">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+</Solution>
