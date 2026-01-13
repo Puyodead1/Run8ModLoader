@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using HarmonyLib;
 
 namespace Run8ModLoader
 {
@@ -88,6 +89,11 @@ namespace Run8ModLoader
 
                 var sortedMods = SortByDependencies(modInfos);
 
+                // core mods
+                Log("\nRegistering core patches...");
+                var harmony = new Harmony("me.puyodead1.run8.core");
+                harmony.PatchAll();
+
                 Log("\nLoading mods...");
                 int loadedCount = 0;
 
@@ -126,11 +132,11 @@ namespace Run8ModLoader
                         _loadedMods.Add(mod);
                         loadedCount++;
 
-                        Log($"[{info.Id}] ✓ Loaded successfully");
+                        Log($"[{info.Id}] Loaded successfully");
                     }
                     catch (Exception ex)
                     {
-                        Log($"[{info.Id}] ✗ Load failed: {ex}");
+                        Log($"[{info.Id}] Load failed: {ex}");
 
                         File.WriteAllText(
                             Path.Combine(info.Directory, "error.log"),
