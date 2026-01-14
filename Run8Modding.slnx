@@ -3,8 +3,23 @@
     <Platform Name="Any CPU" />
     <Platform Name="x64" />
   </Configurations>
+  <Folder Name="/Libraries/">
+    <Project Path="de4dotEx/de4dot.blocks/de4dot.blocks.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="de4dotEx/de4dot.code/de4dot.code.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="de4dotEx/de4dot.cui/de4dot.cui.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="de4dotEx/de4dot.mdecrypt/de4dot.mdecrypt.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+  </Folder>
   <Folder Name="/Mods/">
-    <Project Path="Mods/CustomRoutesMod/CustomRoutesMod.csproj" Id="513c4786-4b28-426c-bccc-1cb87e9bab41" />
+    <Project Path="Mods/CustomRoutesMod/CustomRoutes.csproj" Id="513c4786-4b28-426c-bccc-1cb87e9bab41" />
+    <Project Path="Mods/Dash9LightTweaks/Dash9LightTweaks.csproj" Id="22676582-f9fb-43b3-bc9b-4913857d5087" />
   </Folder>
   <Project Path="Run8ModAPI/Run8ModAPI.csproj" Id="5db8f8bc-21fa-4a4e-b35e-4e1e8b2ff014" />
   <Project Path="Run8ModLoader/Run8ModLoader.csproj" Id="ea0ad3d2-8102-45dc-9355-cd00618959f5">

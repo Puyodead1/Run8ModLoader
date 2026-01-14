@@ -29,10 +29,15 @@ namespace Run8Patcher
                 return;
             }
 
+            var tempPath = Path.GetTempFileName();
+            var patchedPath = exePath.Insert(exePath.LastIndexOf('.'), "-patched");
 
-            string tempPath = exePath + ".tmp";
+            Console.WriteLine($"Starting deobfuscation of: {exePath}");
+            var deobfuscator = new DeobfuscationHelper();
+            deobfuscator.DeobfuscateFile(exePath, tempPath);
+            Console.WriteLine("Deobfuscation complete.\n");
 
-            using (var assembly = AssemblyDefinition.ReadAssembly(exePath))
+            using (var assembly = AssemblyDefinition.ReadAssembly(tempPath))
             {
                 var mainMethod = assembly.MainModule.EntryPoint;
 
@@ -45,18 +50,7 @@ namespace Run8Patcher
                     return;
                 }
 
-                Console.WriteLine("\nPatching game executable...");
-
-                if (!File.Exists(backupPath))
-                {
-                    Console.WriteLine("Creating backup...");
-                    File.Copy(exePath, backupPath);
-                    Console.WriteLine($"Backup created: {Path.GetFileName(backupPath)}");
-                }
-                else
-                {
-                    Console.WriteLine("Backup already exists");
-                }
+                Console.WriteLine($"Patching deobfuscated executable");
 
                 Console.WriteLine($"Entry point: {mainMethod.DeclaringType.Name}.{mainMethod.Name}");
 
@@ -70,22 +64,22 @@ namespace Run8Patcher
                     typeof(AppDomain).GetEvent("AssemblyResolve").AddMethod);
                 var resolveEventHandlerType = assembly.MainModule.ImportReference(typeof(ResolveEventHandler));
 
-                var pathType = assembly.MainModule.ImportReference(typeof(System.IO.Path));
+                var pathType = assembly.MainModule.ImportReference(typeof(Path));
                 var getCombine = assembly.MainModule.ImportReference(
-                    typeof(System.IO.Path).GetMethod("Combine", new[] { typeof(string), typeof(string) }));
+                    typeof(Path).GetMethod("Combine", new[] { typeof(string), typeof(string) }));
                 var asmType = assembly.MainModule.ImportReference(typeof(System.Reflection.Assembly));
                 var getExecutingAsm = assembly.MainModule.ImportReference(
                     typeof(System.Reflection.Assembly).GetMethod("GetExecutingAssembly"));
                 var getLocation = assembly.MainModule.ImportReference(
                     typeof(System.Reflection.Assembly).GetProperty("Location").GetMethod);
                 var getDirName = assembly.MainModule.ImportReference(
-                    typeof(System.IO.Path).GetMethod("GetDirectoryName", new[] { typeof(string) }));
+                    typeof(Path).GetMethod("GetDirectoryName", new[] { typeof(string) }));
                 var loadFrom = assembly.MainModule.ImportReference(
                     typeof(System.Reflection.Assembly).GetMethod("LoadFrom", new[] { typeof(string) }));
                 var getType = assembly.MainModule.ImportReference(
                     typeof(System.Reflection.Assembly).GetMethod("GetType", new[] { typeof(string) }));
                 var getMethod = assembly.MainModule.ImportReference(
-                    typeof(System.Type).GetMethod("GetMethod", new[] { typeof(string), typeof(System.Reflection.BindingFlags) }));
+                    typeof(Type).GetMethod("GetMethod", new[] { typeof(string), typeof(System.Reflection.BindingFlags) }));
                 var invoke = assembly.MainModule.ImportReference(
                     typeof(System.Reflection.MethodInfo).GetMethod("Invoke", new[] { typeof(object), typeof(object[]) }));
                 var bindingFlags = assembly.MainModule.ImportReference(typeof(System.Reflection.BindingFlags));
@@ -119,13 +113,10 @@ namespace Run8Patcher
 
                 Console.WriteLine("Injected ModLoader call");
 
-                assembly.Write(tempPath);
+                assembly.Write(patchedPath);
             }
 
-            File.Delete(exePath);
-            File.Move(tempPath, exePath);
-
-            Console.WriteLine("\nPatch successful!");
+            Console.WriteLine($"\nSuccessfully created patched executable: {patchedPath}");
         }
     }
 }

@@ -54,6 +54,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dnlib, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999, processorArchitecture=MSIL">
+      <HintPath>..\packages\dnlib.4.5.0\lib\net45\dnlib.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Cecil, Version=0.11.6.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.11.6\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
@@ -76,12 +79,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeobfuscationHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\de4dotEx\de4dot.code\de4dot.code.csproj">
+      <Project>{ba08754e-17af-b7ca-29da-0cca550c832d}</Project>
+      <Name>de4dot.code</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\de4dotEx\de4dot.cui\de4dot.cui.csproj">
+      <Project>{6c8942dc-7f07-add4-b5b8-a3b1764d68fe}</Project>
+      <Name>de4dot.cui</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
