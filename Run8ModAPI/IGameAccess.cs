@@ -24,5 +24,10 @@ namespace Run8ModAPI
         /// Wait for game assembly to load (blocks until loaded or timeout)
         /// </summary>
         bool WaitForGameAssembly(int timeoutMs = 10000);
+
+        /// <summary>
+        /// Get game version string
+        /// </summary>
+        string GetVersionString();
     }
 }

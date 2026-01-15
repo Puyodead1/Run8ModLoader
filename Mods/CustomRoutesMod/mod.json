@@ -4,5 +4,6 @@
   "Author": "Puyodead1",
   "Version": "1.0.0",
   "Description": "Adds custom routes to Run8",
-  "Dependencies": []
+  "Dependencies": [],
+  "SupportedGameVersion": "Update23 Dec.04.2025"
 }

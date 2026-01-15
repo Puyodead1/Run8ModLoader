@@ -1,10 +1,12 @@
-﻿using System;
+﻿using HarmonyLib;
+using Run8ModAPI.Logging;
+using System;
 using System.Linq;
 using System.Reflection;
 
 namespace Run8ModAPI.GameAccess
 {
-    internal class GameAccess : IGameAccess
+    public class GameAccess : IGameAccess
     {
         public Assembly GameAssembly { get; private set; }
 
@@ -29,15 +31,38 @@ namespace Run8ModAPI.GameAccess
 
         public Type GetType(string typeName)
         {
-            if (GameAssembly == null)
-                throw new InvalidOperationException("Game assembly not loaded yet!");
+            //if (GameAssembly == null)
+            //    throw new InvalidOperationException("Game assembly not loaded yet!");
 
-            return GameAssembly.GetType(typeName);
+            //return GameAssembly.GetType(typeName);
+            return AccessTools.TypeByName(typeName);
         }
 
         public Type GetType(string namespace_, string typeName)
         {
             return GetType($"{namespace_}.{typeName}");
+        }
+
+        public string GetVersionString()
+        {
+            string version = "Unknown";
+
+            if (!WaitForGameAssembly())
+            {
+                return version;
+            }
+
+            var targetType = GetType("Class616");
+            if (targetType != null)
+            {
+                var field = targetType.GetField("string_0", BindingFlags.Static | BindingFlags.NonPublic);
+                if (field != null)
+                {
+                    version = (string)field.GetValue(null);
+                }
+            }
+
+            return version;
         }
     }
 }

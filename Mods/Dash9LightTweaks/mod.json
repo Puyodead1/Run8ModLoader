@@ -4,5 +4,6 @@
   "Author": "Puyodead1",
   "Version": "1.0.0",
   "Description": "Tweaks for the Dash9",
-  "Dependencies": []
+  "Dependencies": [],
+  "SupportedGameVersion": "Update23 Dec.04.2025"
 }

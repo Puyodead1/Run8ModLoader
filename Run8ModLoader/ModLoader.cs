@@ -6,28 +6,48 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using HarmonyLib;
+using Run8ModLoader.CorePatches;
+using Run8ModAPI.GameAccess;
 
 namespace Run8ModLoader
 {
     public static class ModLoader
     {
-        private static StreamWriter _logFile;
+        public static readonly string SUPPORTED_GAME_VERSION = "Update23 Dec.04.2025";
+
+        private static string gameDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static string logPath = Path.Combine(gameDir, "ModLoader.log");
+        private static string modsFolder = Path.Combine(gameDir, "Mods");
+        private static StreamWriter _logFile = new StreamWriter(logPath, false) { AutoFlush = true };
         private static List<ModBase> _loadedMods = new List<ModBase>();
+        private static IGameAccess gameAccess = new GameAccess();
 
         public static void Initialize()
         {
             try
             {
-                var gameDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var logPath = Path.Combine(gameDir, "ModLoader.log");
-                _logFile = new StreamWriter(logPath, false) { AutoFlush = true };
-
                 Log("--- Run8 ModLoader Startup ---");
                 Log($"Time: {DateTime.Now}");
                 Log($"Game Directory: {gameDir}");
+                string gameVersion = gameAccess.GetVersionString();
+                Log($"Game Version: {gameVersion}");
                 Log($"API Version: {typeof(ModBase).Assembly.GetName().Version}");
 
-                var modsFolder = Path.Combine(gameDir, "Mods");
+                if (gameVersion != SUPPORTED_GAME_VERSION)
+                {
+                    Log("CRITICAL ERROR: The game version you are running is not supported by this version of the mod loader !!!");
+                    Log($"!!! Supported version: {SUPPORTED_GAME_VERSION} !!!");
+                    return;
+                }
+
+                // core mods
+                Log("Registering core patches...");
+                var harmony = new Harmony("me.puyodead1.run8.core");
+                harmony.PatchAll();
+
+                VersionPatch.ApplyPatch();
+
+
                 if (!Directory.Exists(modsFolder))
                 {
                     Directory.CreateDirectory(modsFolder);
@@ -63,6 +83,13 @@ namespace Run8ModLoader
                         var modInfo = JsonConvert.DeserializeObject<ModInfo>(modInfoJson);
                         modInfo.Directory = modFolder;
 
+                        // version check
+                        if (modInfo.SupportedGameVersion != SUPPORTED_GAME_VERSION)
+                        {
+                            Log($"  ERROR: {modName} does not support this game version! Supported Version: {modInfo.SupportedGameVersion}, skipping");
+                            continue;
+                        }
+
                         var dllPath = Path.Combine(modFolder, modInfo.Id + ".dll");
                         if (!File.Exists(dllPath))
                         {
@@ -89,19 +116,14 @@ namespace Run8ModLoader
 
                 var sortedMods = SortByDependencies(modInfos);
 
-                // core mods
-                Log("\nRegistering core patches...");
-                var harmony = new Harmony("me.puyodead1.run8.core");
-                harmony.PatchAll();
-
-                Log("\nLoading mods...");
+                Log("Loading mods...");
                 int loadedCount = 0;
 
                 foreach (var (info, dllPath) in sortedMods)
                 {
                     try
                     {
-                        Log($"\n[{info.Id}] Loading...");
+                        Log($"[{info.Id}] Loading...");
 
                         foreach (var dep in info.Dependencies)
                         {
@@ -144,9 +166,9 @@ namespace Run8ModLoader
                     }
                 }
 
-                Log($"\nLoaded {loadedCount}/{sortedMods.Count} mods");
+                Log($"Loaded {loadedCount}/{sortedMods.Count} mods");
 
-                Log("\nTriggering OnGameStart...");
+                Log("Triggering OnGameStart...");
                 foreach (var mod in _loadedMods)
                 {
                     try
@@ -190,7 +212,7 @@ namespace Run8ModLoader
             return sorted;
         }
 
-        private static void Log(string message)
+        public static void Log(string message)
         {
             _logFile?.WriteLine($"[{DateTime.Now:HH:mm:ss}] {message}");
         }

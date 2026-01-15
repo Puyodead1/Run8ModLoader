@@ -42,5 +42,10 @@ namespace Run8ModAPI
         /// Directory where mod is located
         /// </summary>
         public string Directory { get; set; }
-    }
+
+        /// <summary>
+        /// The game version this mod is compatible with (e.g. "Update23 Dec.04.2025")
+        /// </summary>
+        public string SupportedGameVersion { get; set; }
+        }
 }
